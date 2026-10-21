@@ -53,7 +53,7 @@ class SchoolOnboardingController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'role' => ['required', 'string', Rule::in(array_keys(User::schoolCreationRoles()))],
-            'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:2048'],
             'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],

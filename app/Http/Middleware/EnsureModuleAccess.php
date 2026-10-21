@@ -17,7 +17,7 @@ class EnsureModuleAccess
             return $next($request);
         }
 
-        $module = explode('.', $name)[0];
+        $module = $name === 'sync.notes' ? 'notes' : explode('.', $name)[0];
 
         if (!in_array($module, \App\Models\User::MODULES, true) || $user->canAccess($module)) {
             return $next($request);

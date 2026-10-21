@@ -62,7 +62,7 @@
                     <div id="teacher-badge-section" class="rounded-2xl border border-slate-200 overflow-hidden">
                         <div class="flex items-center justify-between bg-slate-50 px-4 py-3 border-b border-slate-200 print:hidden">
                             <h2 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-600"><x-icon name="id-card" /> Badge de l'enseignant</h2>
-                            <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition">
+                            <button type="button" x-on:click="window.print()" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition">
                                 <x-icon name="printer" /> Imprimer
                             </button>
                         </div>
@@ -116,7 +116,7 @@
         }
     </style>
 
-    <script>
+    <script @cspNonce>
         (() => {
             const tabs = document.querySelectorAll('.student-tab');
             const panels = document.querySelectorAll('[data-panel]');

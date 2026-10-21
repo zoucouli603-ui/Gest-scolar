@@ -106,7 +106,7 @@
             </form>
         @endif
     </div>
-    <script>
+    <script @cspNonce>
         document.addEventListener('DOMContentLoaded', () => {
             const classSelect = document.getElementById('class_room_id');
             const studentSelect = document.getElementById('student_id');

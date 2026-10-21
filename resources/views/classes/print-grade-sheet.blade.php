@@ -35,7 +35,7 @@
 </head>
 <body>
     <div class="toolbar no-print">
-        <button type="button" onclick="window.print()">Imprimer</button>
+        <button type="button" data-print>Imprimer</button>
         <a href="{{ route('classes.show', $classe) }}">Retour</a>
     </div>
 
@@ -84,5 +84,10 @@
             </tbody>
         </table>
     </div>
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </body>
 </html>

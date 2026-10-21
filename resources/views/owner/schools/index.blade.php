@@ -61,14 +61,14 @@
                         <div class="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-start sm:justify-between">
                             <details class="w-full sm:max-w-lg">
                                 <summary class="cursor-pointer text-sm font-semibold text-rose-700 hover:text-rose-800">Refuser cette demande</summary>
-                                <form method="POST" action="{{ route('owner.applications.reject', $application) }}" class="mt-3 space-y-2 rounded-xl border border-rose-100 bg-rose-50 p-3" onsubmit="return confirm('Refuser cette demande ? Le demandeur pourra en envoyer une nouvelle.')">
+                                <form method="POST" action="{{ route('owner.applications.reject', $application) }}" class="mt-3 space-y-2 rounded-xl border border-rose-100 bg-rose-50 p-3" x-on:submit="if (!confirm('Refuser cette demande ? Le demandeur pourra en envoyer une nouvelle.')) $event.preventDefault()">
                                     @csrf
                                     <label for="rejection_reason_{{ $application->id }}" class="block text-xs font-semibold text-rose-900">Motif à communiquer au demandeur</label>
                                     <textarea id="rejection_reason_{{ $application->id }}" name="rejection_reason" required minlength="5" maxlength="1000" rows="2" class="w-full rounded-lg border-rose-200 text-sm focus:border-rose-500 focus:ring-rose-500"></textarea>
                                     <button type="submit" class="rounded-lg bg-rose-700 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-800">Confirmer le refus</button>
                                 </form>
                             </details>
-                            <form method="POST" action="{{ route('owner.applications.approve', $application) }}" onsubmit="return confirm('Approuver cette école ? Son espace sera immédiatement activé.')">
+                            <form method="POST" action="{{ route('owner.applications.approve', $application) }}" x-on:submit="if (!confirm('Approuver cette école ? Son espace sera immédiatement activé.')) $event.preventDefault()">
                                 @csrf
                                 <button type="submit" class="w-full rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 sm:w-auto">Approuver et activer</button>
                             </form>
@@ -151,14 +151,14 @@
                                         </form>
                                     </details>
                                     @if($school->access_status === 'suspended')
-                                        <form method="POST" action="{{ route('owner.schools.reactivate', $school) }}" onsubmit="return confirm('Réactiver l’accès de cette école ?')">
+                                        <form method="POST" action="{{ route('owner.schools.reactivate', $school) }}" x-on:submit="if (!confirm('Réactiver l’accès de cette école ?')) $event.preventDefault()">
                                             @csrf
                                             <button type="submit" class="whitespace-nowrap text-sm font-semibold text-emerald-700 hover:underline">Réactiver l’école</button>
                                         </form>
                                     @else
                                         <details>
                                             <summary class="cursor-pointer text-sm font-semibold text-rose-700 hover:text-rose-800">Suspendre l’accès</summary>
-                                            <form method="POST" action="{{ route('owner.schools.suspend', $school) }}" class="mt-2 w-72 space-y-2 rounded-xl border border-rose-100 bg-rose-50 p-3" onsubmit="return confirm('Suspendre l’accès de tous les utilisateurs de cette école ?')">
+                                            <form method="POST" action="{{ route('owner.schools.suspend', $school) }}" class="mt-2 w-72 space-y-2 rounded-xl border border-rose-100 bg-rose-50 p-3" x-on:submit="if (!confirm('Suspendre l’accès de tous les utilisateurs de cette école ?')) $event.preventDefault()">
                                                 @csrf
                                                 <label for="suspension_reason_{{ $school->id }}" class="block text-xs font-semibold text-rose-900">Motif de suspension</label>
                                                 <textarea id="suspension_reason_{{ $school->id }}" name="suspension_reason" required minlength="5" maxlength="1000" rows="2" class="w-full rounded-lg border-rose-200 text-sm"></textarea>

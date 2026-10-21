@@ -37,7 +37,7 @@
                         Année scolaire : {{ $currentYear->name }}
                     </span>
                 @endif
-                <button type="button" onclick="window.print()" class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+                <button type="button" x-on:click="window.print()" class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
                     Imprimer
                 </button>
             </div>
@@ -173,7 +173,7 @@
                                                     @if($entry->room)
                                                         <p class="text-[11px] text-slate-500">{{ $entry->room }}</p>
                                                     @endif
-                                                    <form class="no-print mt-1 text-right" action="{{ route('timetable.destroy', $entry) }}" method="POST" onsubmit="return confirm('Supprimer ce cours de l’emploi du temps ?');">
+                                                    <form class="no-print mt-1 text-right" action="{{ route('timetable.destroy', $entry) }}" method="POST" x-on:submit="if (!confirm('Supprimer ce cours de l’emploi du temps ?')) $event.preventDefault()">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="text-[11px] font-medium text-rose-600 hover:text-rose-800">Supprimer</button>

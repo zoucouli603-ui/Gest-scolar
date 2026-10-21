@@ -97,7 +97,7 @@ class TeacherController extends Controller
         unset($validated['class_ids'], $validated['subject_ids'], $validated['class_ids_present']);
         $validated['school_year_id'] = $currentYear->id;
 
-        $request->validate(['photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
+        $request->validate(['photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|extensions:jpg,jpeg,png,webp|max:2048']);
         if ($request->hasFile('photo')) {
             $validated['photo_path'] = $request->file('photo')->store('teacher-photos', 'public');
         }
@@ -255,7 +255,7 @@ class TeacherController extends Controller
         $subjectIds = $validated['subject_ids'] ?? [];
         unset($validated['class_ids'], $validated['subject_ids'], $validated['class_ids_present']);
 
-        $request->validate(['photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
+        $request->validate(['photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|extensions:jpg,jpeg,png,webp|max:2048']);
         if ($request->hasFile('photo')) {
             $newPhoto = $request->file('photo')->store('teacher-photos', 'public');
             if ($teacher->photo_path) {

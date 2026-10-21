@@ -10,7 +10,10 @@
     $isTerminal = str_contains($normalized, 'terminal')
         || preg_match('/^\s*T[A-Z]{1,6}\d*\s*$/', $className) === 1;
     $needsExamFields = $isNinth || ($isTerminal && ($isLycee || $cycle === ''));
-    $showMatriculeField = $isTerminal && $isLycee;
+    $showMatriculeField = $student->usesStateMatriculeOnCard();
+    $stateMatricule = trim((string) $student->matricule_etat);
+    $cardMatricule = $stateMatricule !== '' ? $stateMatricule : $student->registration_number;
+    $matriculeLabel = $stateMatricule !== '' ? 'N° Matricule État' : 'Matricule interne';
     $photo = $student->photo_path ? url('storage/' . ltrim($student->photo_path, '/')) : null;
     $initials = mb_strtoupper(mb_substr($student->first_name ?? '', 0, 1) . mb_substr($student->last_name ?? '', 0, 1));
     $schoolModel = $activeSchool ?? auth()->user()?->school;
@@ -113,9 +116,8 @@
                 </label>
                 @if ($showMatriculeField)
                     <label class="block">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">N° Matricule</span>
-                        <input type="text" placeholder="………………………"
-                               class="mt-0.5 w-full rounded-md border border-dashed border-slate-400 bg-transparent px-2 py-1.5 text-sm font-bold text-slate-800 placeholder-slate-300 focus:border-indigo-500 focus:ring-0 print:placeholder-transparent">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">{{ $matriculeLabel }}</span>
+                        <p class="mt-0.5 break-all rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm font-bold text-slate-800">{{ $cardMatricule }}</p>
                     </label>
                 @endif
             </div>

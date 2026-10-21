@@ -22,6 +22,7 @@ use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', fn () => view('schools.welcome'))->name('home');
+Route::view('/offline', 'offline')->name('offline');
 
 Route::get('/invitations/{token}', [SchoolInvitationController::class, 'show'])
     ->name('school.invitations.show');

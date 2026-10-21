@@ -78,7 +78,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @forelse ($students as $student)
-                        <tr class="hover:bg-slate-50/50 transition cursor-pointer" onclick="window.location='{{ route('students.show', $student->id) }}'">
+                        <tr class="hover:bg-slate-50/50 transition cursor-pointer" x-on:click="window.location='{{ route('students.show', $student->id) }}'">
                             <td class="p-4 font-semibold text-slate-800">{{ $student->first_name }} {{ $student->last_name }}</td>
                             <td class="p-4">{{ $student->gender == 'M' ? 'Garçon' : 'Fille' }}</td>
                             <td class="p-4">{{ \Carbon\Carbon::parse($student->birth_date)->format('d/m/Y') }}</td>

@@ -88,7 +88,7 @@
     </style>
 </head>
 <body @class(['second-cycle' => $isSecondCycle || $isHighSchool, 'high-school' => $isHighSchool, 'primary-cycle' => $isPrimary])>
-    <div class="toolbar no-print"><a href="{{ route('notes.index') }}">Retour</a><button onclick="window.print()">Imprimer tous les bulletins</button></div>
+    <div class="toolbar no-print"><a href="{{ route('notes.index') }}">Retour</a><button type="button" data-print>Imprimer tous les bulletins</button></div>
     <main class="page">
         <header><x-doc-logo /><h1>{{ $schoolName }}</h1><div>Année scolaire : {{ $currentYear->name }}</div></header>
         <h2>Bulletins de la classe {{ $classRoom->name }}</h2>
@@ -244,5 +244,10 @@
             </section>
         @endforeach
     </main>
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </body>
 </html>

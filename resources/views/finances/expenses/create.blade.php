@@ -62,7 +62,7 @@
             </div>
         </form>
     </div>
-    <script>
+    <script @cspNonce>
         document.addEventListener('DOMContentLoaded', () => {
             const category = document.getElementById('category');
             const teacherField = document.getElementById('salary-teacher-field');

@@ -10,8 +10,11 @@ class Student extends Model
  use HasFactory;
  use BelongsToCurrentSchool;
 
+ public const STATE_MATRICULE_CARD_CLASSES = ['TSE', 'TSEXP', 'TLL', 'TSECO', 'TSS', 'TAL'];
+
  protected $fillable = [
     'registration_number',
+    'matricule_etat',
     'first_name',
     'last_name',
     'gender',
@@ -38,6 +41,14 @@ class Student extends Model
  public function classRoom()
  {
     return $this->belongsTo(ClassRoom::class, 'class_room_id');
+ }
+
+ public function usesStateMatriculeOnCard(): bool
+ {
+    $className = trim((string) ($this->classRoom?->name ?? $this->class_name));
+
+    return $this->classRoom?->cycle === 'Lycée'
+        && in_array(mb_strtoupper($className), self::STATE_MATRICULE_CARD_CLASSES, true);
  }
 
  public function genderLabel(): string

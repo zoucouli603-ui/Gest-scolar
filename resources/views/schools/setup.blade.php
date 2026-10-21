@@ -4,7 +4,7 @@
             <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-5">
                 <a href="{{ route('home') }}" aria-label="YELENSCOL, accueil"><x-brand-logo /></a>
             </div>
-            <a href="{{ route('logout') }}" class="text-sm font-medium text-blue-700 hover:underline" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Déconnexion</a>
+            <a href="{{ route('logout') }}" class="text-sm font-medium text-blue-700 hover:underline" x-on:click.prevent="document.getElementById('logout-form').submit()">Déconnexion</a>
             <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">@csrf</form>
 
             <div class="mt-6">

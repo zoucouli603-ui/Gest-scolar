@@ -29,7 +29,7 @@ class SchoolSettingsController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'director_name' => ['nullable', 'string', 'max:255'],
-            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:2048'],
             'cycles' => ['required', 'array', 'min:1', School::exclusiveLyceeRule()],
             'cycles.*' => ['required', 'string', Rule::in([...School::CYCLES, 'Primaire', 'Secondaire']), 'distinct'],
             ...School::academyRules($request->all()),
@@ -141,7 +141,7 @@ class SchoolSettingsController extends Controller
     {
         $validated = $request->validate([
             'title' => ['nullable', 'string', 'max:100'],
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'extensions:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
 
         $school = $request->user()->school;

@@ -106,7 +106,7 @@
         @endif
     </div>
 
-    <script>
+    <script @cspNonce>
         (() => {
             const $ = (id) => document.getElementById(id);
             const form = $('scan-form'), input = $('scan-code');

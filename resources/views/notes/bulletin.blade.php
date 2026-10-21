@@ -106,7 +106,7 @@
                 @endphp
             @endif
             <a class="back" href="{{ route('notes.index', $notesQuery) }}">Retour aux notes</a>
-            <button type="button" onclick="window.print()">Imprimer le bulletin</button>
+            <button type="button" data-print>Imprimer le bulletin</button>
         </div>
 
         <header class="school-header">
@@ -291,5 +291,10 @@
         </div>
         @endif
     </main>
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </body>
 </html>

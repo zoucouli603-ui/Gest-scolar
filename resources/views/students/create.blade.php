@@ -80,14 +80,19 @@
                     <!-- Classe -->
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Classe</label>
-                        <select name="class_room_id" required class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm">
+                        <select id="class_room_id" name="class_room_id" required class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm">
                             <option value="">Sélectionner une classe</option>
                             @foreach($classes as $classRoom)
-                                <option value="{{ $classRoom->id }}" {{ old('class_room_id') == $classRoom->id ? 'selected' : '' }}>
+                                <option value="{{ $classRoom->id }}" data-cycle="{{ $classRoom->cycle }}" {{ old('class_room_id') == $classRoom->id ? 'selected' : '' }}>
                                 {{ $classRoom->name }} ({{ number_format((float) $classRoom->monthly_fee, 0, ',', ' ') }} {{ $currency ?? 'FCFA' }}/mois)
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div id="matricule-etat-field" class="hidden">
+                        <label for="matricule_etat" class="block text-sm font-medium text-slate-700 mb-1">N° Matricule État</label>
+                        <input id="matricule_etat" type="text" name="matricule_etat" value="{{ old('matricule_etat') }}" maxlength="255" class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm">
                     </div>
 
                     <!-- École -->
@@ -120,4 +125,19 @@
             </form>
         </div>
     </div>
+    <script @cspNonce>
+        (() => {
+            const classSelect = document.getElementById('class_room_id');
+            const matriculeField = document.getElementById('matricule-etat-field');
+            const matriculeInput = document.getElementById('matricule_etat');
+            const updateMatriculeField = () => {
+                const isLycee = classSelect.selectedOptions[0]?.dataset.cycle === 'Lycée';
+                matriculeField.classList.toggle('hidden', !isLycee);
+                matriculeInput.disabled = !isLycee;
+            };
+
+            classSelect.addEventListener('change', updateMatriculeField);
+            updateMatriculeField();
+        })();
+    </script>
 </x-app-layout>

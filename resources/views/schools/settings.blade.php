@@ -14,9 +14,9 @@
         @if(session('success'))
             <div id="flash-success" role="alert" class="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 transition-opacity duration-500">
                 <span>{{ session('success') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-lg font-bold leading-none text-emerald-600 hover:text-emerald-800" aria-label="Fermer">&times;</button>
+                <button type="button" x-on:click="$el.parentElement.remove()" class="text-lg font-bold leading-none text-emerald-600 hover:text-emerald-800" aria-label="Fermer">&times;</button>
             </div>
-            <script>
+            <script @cspNonce>
                 setTimeout(() => {
                     const el = document.getElementById('flash-success');
                     if (!el) return;
@@ -269,7 +269,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-4 lg:col-span-2">
-                    <button type="submit" name="reset" value="1" formnovalidate class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" onclick="return confirm('Rétablir l’apparence par défaut de YELENSCOL ?')">Réinitialiser</button>
+                    <button type="submit" name="reset" value="1" formnovalidate class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" x-on:click="if (!confirm('Rétablir l’apparence par défaut de YELENSCOL ?')) $event.preventDefault()">Réinitialiser</button>
                     <button type="submit" class="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Enregistrer l’apparence</button>
                 </div>
             </form>
@@ -337,7 +337,7 @@
                                 @unless($photo->is_primary)
                                     <form method="POST" action="{{ route('school.settings.photos.primary', $photo) }}">@csrf @method('PUT')<button class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Définir principale</button></form>
                                 @endunless
-                                <form method="POST" action="{{ route('school.settings.photos.destroy', $photo) }}" onsubmit="return confirm('Supprimer cette photo ?')">@csrf @method('DELETE')<button class="rounded-lg px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">Supprimer</button></form>
+                                <form method="POST" action="{{ route('school.settings.photos.destroy', $photo) }}" x-on:submit="if (!confirm('Supprimer cette photo ?')) $event.preventDefault()">@csrf @method('DELETE')<button class="rounded-lg px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">Supprimer</button></form>
                             </div>
                         </div>
                     </article>

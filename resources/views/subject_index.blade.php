@@ -66,7 +66,7 @@
                         </a>
                         <div class="mt-4 flex items-center justify-center gap-2 border-t border-slate-100 pt-3">
                             <a href="{{ route('subjects.edit', $subject->id) }}" title="Modifier" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"><x-icon name="pencil" /></a>
-                            <form action="{{ route('subjects.destroy', $subject->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette matière ?');" class="inline">
+                            <form action="{{ route('subjects.destroy', $subject->id) }}" method="POST" x-on:submit="if (!confirm('Êtes-vous sûr de vouloir supprimer cette matière ?')) $event.preventDefault()" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" title="Supprimer" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"><x-icon name="trash" /></button>

@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<script>
+<script @cspNonce>
     (() => {
         const root = document.getElementById('cycle-fields');
         const boxes = [...root.querySelectorAll('input[data-cycle]')];

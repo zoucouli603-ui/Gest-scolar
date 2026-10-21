@@ -208,7 +208,7 @@ Tableau de bord
     input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
     input[type="search"]::-ms-clear { display: none; }
 </style>
-<script>
+<script @cspNonce>
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('form input[type="search"][name="search"]').forEach((input) => {
             const form = input.form;
@@ -238,7 +238,7 @@ Tableau de bord
         });
     });
 </script>
-<script>
+<script @cspNonce>
     document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('global-search-input');
         if (!input) return;
@@ -282,7 +282,7 @@ Tableau de bord
         document.addEventListener('click', (e) => { if (!e.target.closest('#global-search')) list.classList.add('hidden'); });
     });
 </script>
-<script>
+<script @cspNonce>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('{{ asset('sw.js') }}')

@@ -51,7 +51,7 @@
         <div class="toolbar-line">
             <a href="{{ route('documents.index') }}">Retour aux documents</a>
             @if($documentType !== 'transfert' || !empty($transferDetails['destination']))
-                <button type="button" onclick="window.print()">Imprimer le document</button>
+                <button type="button" data-print>Imprimer le document</button>
             @endif
         </div>
         @if($documentType === 'transfert')
@@ -166,5 +166,10 @@
             </div>
         </main>
     @endif
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </body>
 </html>

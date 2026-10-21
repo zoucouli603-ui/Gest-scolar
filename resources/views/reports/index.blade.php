@@ -5,7 +5,7 @@
                 <h1 class="flex items-center gap-2 text-xl font-bold text-slate-800"><x-icon name="receipt" class="h-6 w-6 text-rose-600" /> Rapports et statistiques</h1>
                 <p class="mt-1 text-sm text-slate-500">Rapport financier imprimable avec recettes, frais scolaires, salaires et dépenses.</p>
             </div>
-            <button type="button" onclick="window.print()" class="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+            <button type="button" x-on:click="window.print()" class="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
                 Imprimer la fiche
             </button>
         </div>
@@ -291,7 +291,7 @@
             .report-table th, .report-table td { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
         }
     </style>
-    <script>
+    <script @cspNonce>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('report-filter-form');
             const periodType = document.getElementById('period-type-filter');

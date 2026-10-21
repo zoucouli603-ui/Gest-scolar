@@ -131,7 +131,7 @@
                                     <a href="{{ route('finances.receipt', $payment) }}" title="Afficher le reçu" class="inline-flex rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"></path></svg>
                                     </a>
-                                    <form action="{{ route('finances.destroy', $payment) }}" method="POST" onsubmit="return confirm('Supprimer cet enregistrement de paiement ?');" class="inline">
+                                    <form action="{{ route('finances.destroy', $payment) }}" method="POST" x-on:submit="if (!confirm('Supprimer cet enregistrement de paiement ?')) $event.preventDefault()" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Supprimer le paiement" class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600">
@@ -179,7 +179,7 @@
                                 </td>
                                 <td class="whitespace-nowrap p-4 font-semibold text-amber-700">{{ number_format((float) $expense->amount, 0, ',', ' ') }} {{ $currency ?? 'FCFA' }}</td>
                                 <td class="p-4 text-right">
-                                    <form action="{{ route('finances.expenses.destroy', $expense) }}" method="POST" onsubmit="return confirm('Supprimer cette dépense ?');" class="inline">
+                                    <form action="{{ route('finances.expenses.destroy', $expense) }}" method="POST" x-on:submit="if (!confirm('Supprimer cette dépense ?')) $event.preventDefault()" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Supprimer la dépense" class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600">

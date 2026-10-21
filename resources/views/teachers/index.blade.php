@@ -117,7 +117,7 @@
                         <div class="mt-4 flex items-center justify-center gap-2 border-t border-slate-100 pt-3">
                             <a href="{{ route('teachers.show', $teacher->id) }}#badge" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600" title="Badge QR"><x-icon name="id-card" /></a>
                             <a href="{{ route('teachers.edit', $teacher->id) }}" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600" title="Modifier"><x-icon name="pencil" /></a>
-                            <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?');" class="inline">
+                            <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST" x-on:submit="if (!confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) $event.preventDefault()" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600" title="Supprimer"><x-icon name="trash" /></button>

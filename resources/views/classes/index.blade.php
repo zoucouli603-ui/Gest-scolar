@@ -109,7 +109,7 @@
                             <a href="{{ route('classes.edit', $classe) }}" title="Modifier la classe et ses frais" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16.862 4.487 1.687-1.687a2.121 2.121 0 0 1 3 3l-1.687 1.687M16.862 4.487 7.5 13.849V17h3.151l9.362-9.362M16.862 4.487 19.013 6.64M19.5 13.5v5.25A2.25 2.25 0 0 1 17.25 21H5.25A2.25 2.25 0 0 1 3 18.75V6.75A2.25 2.25 0 0 1 5.25 4.5h5.25"/></svg>
                             </a>
-                            <form action="{{ route('classes.destroy', $classe->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette classe ?');" class="inline">
+                            <form action="{{ route('classes.destroy', $classe->id) }}" method="POST" x-on:submit="if (!confirm('Êtes-vous sûr de vouloir supprimer cette classe ?')) $event.preventDefault()" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" title="Supprimer" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600">

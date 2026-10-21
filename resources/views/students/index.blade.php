@@ -161,7 +161,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @forelse ($students as $student)
-                        <tr class="hover:bg-slate-50/50 transition cursor-pointer" onclick="window.location='{{ route('students.show', $student->id) }}'">
+                        <tr class="hover:bg-slate-50/50 transition cursor-pointer" x-on:click="window.location='{{ route('students.show', $student->id) }}'">
                             <td class="px-4 py-3 font-mono text-xs font-medium text-slate-900">{{ $student->registration_number }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2.5">
@@ -186,7 +186,7 @@
                                     <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full uppercase">Inactif</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-right" onclick="event.stopPropagation();">
+                            <td class="px-4 py-3 text-right" x-on:click.stop>
                                 <div class="flex items-center justify-end gap-1.5">
                                     <a href="{{ route('students.show', $student->id) }}" title="Voir les détails" class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -194,7 +194,7 @@
                                     <a href="{{ route('students.edit', $student->id) }}" title="Modifier" class="p-1.5 text-slate-400 hover:text-amber-600 rounded-lg hover:bg-slate-100 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                     </a>
-                                    <form action="{{ route('students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élève ?');" class="inline">
+                                    <form action="{{ route('students.destroy', $student->id) }}" method="POST" x-on:submit="if (!confirm('Êtes-vous sûr de vouloir supprimer cet élève ?')) $event.preventDefault()" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Supprimer" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition">

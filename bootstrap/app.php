@@ -9,6 +9,8 @@ use App\Http\Middleware\EnsureSchoolTeamAccess;
 use App\Http\Middleware\EnsureSchoolTenant;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\ClearSchoolTenantContext;
+use App\Http\Middleware\SanitizeInput;
+use App\Http\Middleware\SecurityHeaders;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [SanitizeInput::class, SecurityHeaders::class]);
+        $middleware->api(append: [SanitizeInput::class, SecurityHeaders::class]);
         $middleware->prepend(ClearSchoolTenantContext::class);
         $middleware->prependToPriorityList(
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

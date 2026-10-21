@@ -61,8 +61,13 @@
         </footer>
     </main>
     <div class="actions">
-        <button class="print" type="button" onclick="window.print()">Imprimer le reçu</button>
+        <button class="print" type="button" data-print>Imprimer le reçu</button>
         <a class="back" href="{{ route('finances.index') }}">Retour aux finances</a>
     </div>
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </body>
 </html>

@@ -134,8 +134,154 @@
             @endif
         @endif
     </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script @cspNonce>
+        const queuedNotesStore = {
+            name: 'YenScolOffline',
+            store: 'pendingNotes',
+            open() {
+                if (!('indexedDB' in window)) {
+                    return Promise.resolve(null);
+                }
+
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.name, 1);
+
+                    request.onupgradeneeded = () => {
+                        const database = request.result;
+                        if (!database.objectStoreNames.contains(this.store)) {
+                            database.createObjectStore(this.store, { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+            async all() {
+                const database = await this.open();
+                if (!database) return [];
+
+                return new Promise((resolve, reject) => {
+                    const transaction = database.transaction(this.store, 'readonly');
+                    const request = transaction.objectStore(this.store).getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                    transaction.oncomplete = () => database.close();
+                });
+            },
+            async add(payload) {
+                const database = await this.open();
+                if (!database) return null;
+
+                return new Promise((resolve, reject) => {
+                    const transaction = database.transaction(this.store, 'readwrite');
+                    const request = transaction.objectStore(this.store).add({
+                        ...payload,
+                        created_at: new Date().toISOString(),
+                    });
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                    transaction.oncomplete = () => database.close();
+                });
+            },
+            async deleteMany(ids) {
+                const database = await this.open();
+                if (!database || !ids.length) return;
+
+                const transaction = database.transaction(this.store, 'readwrite');
+                const store = transaction.objectStore(this.store);
+
+                ids.forEach((id) => store.delete(id));
+                transaction.oncomplete = () => database.close();
+            }
+        };
+
+        const collectOfflineNotes = (form) => {
+            const metadata = {
+                class_room_id: form.querySelector('input[name="class_room_id"]')?.value,
+                subject_id: form.querySelector('input[name="subject_id"]')?.value,
+                evaluation_type: form.querySelector('input[name="evaluation_type"]')?.value,
+                trimester: form.querySelector('input[name="trimester"]')?.value,
+                evaluation_month: form.querySelector('input[name="evaluation_month"]')?.value,
+                note_date: form.querySelector('input[name="note_date"]')?.value,
+                coefficient: form.querySelector('input[name="coefficient"]')?.value,
+            };
+
+            const noteEntries = [];
+            const inputs = [
+                ...Array.from(form.querySelectorAll('input[name^="class_scores["]')),
+                ...Array.from(form.querySelectorAll('input[name^="term_scores["]')),
+            ];
+
+            inputs.forEach((input) => {
+                const value = input.value.trim();
+                if (value === '') {
+                    return;
+                }
+
+                const match = input.name.match(/\[(\d+)\]/);
+                const studentId = match ? Number(match[1]) : null;
+                if (!studentId) {
+                    return;
+                }
+
+                const type = input.name.startsWith('term_scores[') ? 'examen_trimestriel' : metadata.evaluation_type;
+                const payload = {
+                    ...metadata,
+                    student_id: studentId,
+                    evaluation_type: type,
+                    score: Number(value),
+                };
+
+                if (!payload.class_room_id || !payload.subject_id) {
+                    return;
+                }
+
+                noteEntries.push(payload);
+            });
+
+            return noteEntries;
+        };
+
+        const syncQueuedNotes = async () => {
+            if (!navigator.onLine) {
+                return;
+            }
+
+            const pendingNotes = await queuedNotesStore.all();
+            if (!pendingNotes.length) {
+                return;
+            }
+
+            const payload = pendingNotes.flatMap((entry) => entry.notes ?? []);
+            if (!payload.length) {
+                return;
+            }
+
+            try {
+                const response = await fetch('{{ route('sync.notes') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ notes: payload }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('La synchronisation a échoué.');
+                }
+
+                const ids = pendingNotes.map((note) => note.id).filter((id) => id !== undefined);
+                await queuedNotesStore.deleteMany(ids);
+                window.alert('Toutes vos saisies hors ligne ont été synchronisées avec succès !');
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
             const classSelect = document.getElementById('class_room_id');
             const subjectSelect = document.getElementById('subject_id');
             classSelect?.addEventListener('change', () => { subjectSelect.value = ''; subjectSelect.disabled = !classSelect.value; classSelect.form.submit(); });
@@ -164,6 +310,29 @@
             };
             bulletinStudent?.addEventListener('change', updateBulletinLink);
             updateBulletinLink();
+
+            const saveForm = document.querySelector('form[action="{{ route('notes.store') }}"]');
+            if (saveForm) {
+                saveForm.addEventListener('submit', async (event) => {
+                    if (navigator.onLine) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    const notes = collectOfflineNotes(saveForm);
+                    if (!notes.length) {
+                        return;
+                    }
+
+                    await queuedNotesStore.add({ notes });
+                    const message = 'Les notes ont été enregistrées hors ligne. Elles seront envoyées automatiquement dès que la connexion reviendra.';
+                    window.alert(message);
+                    saveForm.reset();
+                });
+            }
+
+            await syncQueuedNotes();
+            window.addEventListener('online', syncQueuedNotes);
         });
     </script>
 </x-app-layout>

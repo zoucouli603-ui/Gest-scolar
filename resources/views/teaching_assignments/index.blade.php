@@ -87,7 +87,7 @@
                                 <td class="p-4">{{ $assignment->teacher->first_name }} {{ $assignment->teacher->last_name }}</td>
                                 <td class="p-4">{{ $assignment->classRoom->name }}</td>
                                 <td class="p-4 text-right">
-                                    <form action="{{ route('teaching-assignments.destroy', $assignment) }}" method="POST" onsubmit="return confirm('Supprimer cette affectation ?');" class="inline">
+                                    <form action="{{ route('teaching-assignments.destroy', $assignment) }}" method="POST" x-on:submit="if (!confirm('Supprimer cette affectation ?')) $event.preventDefault()" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600" title="Supprimer l’affectation">

@@ -109,14 +109,18 @@ class StudentController extends Controller
             'nationality'     => 'required|string|max:255',
             'inscription_date'=> 'required|date',
             'school_name'     => 'nullable|string|max:255',
+            'matricule_etat'  => 'nullable|string|max:255',
             'class_room_id'   => [
                 'required',
                 Rule::exists('class_rooms', 'id')->where('school_year_id', $currentYear->id),
             ],
             'parent_name'     => 'required|string|max:255',
             'parent_phone'    => 'required|string|max:255',
-            'photo'           => ['nullable', 'image', 'max:5120'],
-            'birth_certificate' => ['nullable', 'image', 'max:5120'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:5120'],
+            'birth_certificate' => [
+                'nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'extensions:jpg,jpeg,png,pdf',
+                'mimetypes:image/jpeg,image/png,application/pdf', 'max:5120',
+            ],
         ]);
 
         $classRoom = ClassRoom::findOrFail($validated['class_room_id']);
@@ -130,6 +134,9 @@ class StudentController extends Controller
         }
 
         $validated['class_name'] = $classRoom->name;
+        $validated['matricule_etat'] = $classRoom->cycle === 'Lycée'
+            ? ($validated['matricule_etat'] ?? null)
+            : null;
         $validated['registration_number'] = 'DEM-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
         $validated['status'] = 'actif';
         $validated['school_year_id'] = $currentYear->id;
@@ -188,6 +195,7 @@ class StudentController extends Controller
             'birth_place'      => 'required|string|max:255',
             'nationality'      => 'required|string|max:255',
             'school_name'      => 'nullable|string|max:255',
+            'matricule_etat'   => 'nullable|string|max:255',
             'class_room_id'    => [
                 'required',
                 Rule::exists('class_rooms', 'id')
@@ -196,12 +204,18 @@ class StudentController extends Controller
             'parent_name'      => 'required|string|max:255',
             'parent_phone'     => 'required|string|max:255',
             'status'           => 'required|in:actif,inactif',
-            'photo'            => ['nullable', 'image', 'max:5120'],
-            'birth_certificate' => ['nullable', 'image', 'max:5120'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:5120'],
+            'birth_certificate' => [
+                'nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'extensions:jpg,jpeg,png,pdf',
+                'mimetypes:image/jpeg,image/png,application/pdf', 'max:5120',
+            ],
         ]);
 
         $classRoom = ClassRoom::findOrFail($validated['class_room_id']);
         $validated['class_name'] = $classRoom->name;
+        $validated['matricule_etat'] = $classRoom->cycle === 'Lycée'
+            ? ($validated['matricule_etat'] ?? null)
+            : null;
         $validated['school_year_id'] = $classRoom->school_year_id;
         $validated['school_name'] = $request->user()->school->name;
 
@@ -264,6 +278,7 @@ class StudentController extends Controller
             200,
             [
                 'Content-Type' => $mimeType,
+                'Content-Disposition' => 'attachment; filename="birth-certificate"',
                 'Cache-Control' => 'private, no-store',
                 'X-Content-Type-Options' => 'nosniff',
             ]

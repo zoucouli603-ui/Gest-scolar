@@ -74,7 +74,7 @@
                         <p class="mt-1 text-xs leading-5 text-slate-500">
                             Les classes, élèves, enseignants, matières et affectations seront reportés. Les notes, finances, emploi du temps et rapports resteront propres à l’ancienne année.
                         </p>
-                        <form action="{{ route('school-years.close') }}" method="POST" class="mt-3 space-y-3" onsubmit="return confirm('Clôturer l’année actuelle et créer la nouvelle année ?');">
+                        <form action="{{ route('school-years.close') }}" method="POST" class="mt-3 space-y-3" x-on:submit="if (!confirm('Clôturer l’année actuelle et créer la nouvelle année ?')) $event.preventDefault()">
                             @csrf
                             <input type="text" name="name" placeholder="Ex : 2027-2028" required class="w-full rounded-lg border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500">
                             <button type="submit" class="w-full rounded-lg bg-amber-600 px-4 py-2 font-medium text-sm text-white shadow-sm transition hover:bg-amber-700">
@@ -118,7 +118,7 @@
                                             </form>
                                         @endunless
 
-                                        <form action="{{ route('school-years.destroy', $year->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette année scolaire ?');" class="inline">
+                                        <form action="{{ route('school-years.destroy', $year->id) }}" method="POST" x-on:submit="if (!confirm('Êtes-vous sûr de vouloir supprimer cette année scolaire ?')) $event.preventDefault()" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Supprimer" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition">

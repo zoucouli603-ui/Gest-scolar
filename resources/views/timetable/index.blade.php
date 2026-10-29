@@ -3,7 +3,7 @@
         @page { size: A4 landscape; margin: 10mm; }
         @media print {
             html, body, main { background: #fff !important; height: auto !important; overflow: visible !important; }
-            body > div > aside, .no-print, #global-search { display: none !important; }
+            .timetable-sidebar, .timetable-add-form, .no-print, #global-search { display: none !important; }
             body > div { display: block !important; height: auto !important; min-height: 0 !important; overflow: visible !important; }
             main { height: auto !important; padding: 0 !important; overflow: visible !important; }
             .timetable-print .overflow-x-auto { overflow: visible !important; }
@@ -71,7 +71,7 @@
                 Définissez d’abord une année scolaire active pour gérer l’emploi du temps.
             </div>
         @else
-            <section class="no-print rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <section class="timetable-add-form no-print rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <h2 class="mb-3 text-sm font-semibold text-slate-800">Ajouter un cours</h2>
                 @if($assignments->isEmpty())
                     <p class="text-sm text-slate-500">

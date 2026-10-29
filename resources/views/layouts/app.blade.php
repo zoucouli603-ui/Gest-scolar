@@ -29,7 +29,7 @@
     <div class="flex h-screen overflow-hidden">
 
   <!-- Sidebar Latérale à gauche -->
-<aside class="w-56 h-screen bg-white border-r border-slate-200 flex flex-col shrink-0">
+<aside class="timetable-sidebar w-56 h-screen bg-white border-r border-slate-200 flex flex-col shrink-0">
 <div class="min-h-0 flex-1 overflow-y-auto">
 <a href="{{ route('home') }}" class="flex items-center border-b border-slate-100 px-5 py-3.5" aria-label="YELENSCOL"><x-brand-logo size="sm" :variant="$appearance['sidebar'] === 'dark' ? 'dark' : 'light'" /></a>
 <!-- Nom / Logo de l'école -->

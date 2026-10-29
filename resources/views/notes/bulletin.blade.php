@@ -199,7 +199,7 @@
                         <th class="number">{{ $isHighSchool ? 'Moy Général' : 'Moyenne /'.$gradeScale }}</th>
                         <th class="number">{{ $isHighSchool ? 'Moy. coef.' : 'Points coef.' }}</th>
                         @if($isHighSchool)<th class="number">Rang</th>@endif
-                        <th>{{ $isHighSchool ? 'Appréciations' : 'Appr&eacute;ciation' }}</th>
+                        <th>{{ $isHighSchool ? 'Appréciations' : 'Appréciation' }}</th>
                     </tr>
                 </thead>
                 <tbody>

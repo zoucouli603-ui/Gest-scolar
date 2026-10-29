@@ -153,7 +153,7 @@
                     <div id="student-card-section" class="rounded-2xl border border-slate-200 overflow-hidden">
                         <div class="flex items-center justify-between bg-slate-50 px-4 py-3 border-b border-slate-200 print:hidden">
                             <h2 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-600"><x-icon name="id-card" /> Carte de l'élève</h2>
-                            <button type="button" x-on:click="window.print()" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition">
+                            <button type="button" data-print class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition">
                                 <x-icon name="printer" /> Imprimer
                             </button>
                         </div>
@@ -177,9 +177,12 @@
     <style>
         .student-tab.is-active { border-color: #2563eb; color: #1d4ed8; }
         @media print {
+            html, body, body > div, main { height: auto !important; min-height: 0 !important; overflow: visible !important; background: #fff !important; }
+            body > div { display: block !important; }
+            main { padding: 0 !important; }
             body * { visibility: hidden; }
             #student-card-section, #student-card-section * { visibility: visible; }
-            #student-card-section { position: absolute; left: 0; top: 0; border: 0; }
+            #student-card-section { position: fixed; inset: 0 auto auto 0; width: 100%; border: 0; }
         }
     </style>
 
@@ -194,6 +197,9 @@
                 history.replaceState(null, '', '#' + key);
             };
             tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.tab)));
+            document.querySelectorAll('[data-print]').forEach(button => {
+                button.addEventListener('click', () => window.print());
+            });
             show(location.hash.slice(1) || 'infos');
         })();
     </script>

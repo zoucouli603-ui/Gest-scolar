@@ -37,7 +37,7 @@
                         Année scolaire : {{ $currentYear->name }}
                     </span>
                 @endif
-                <button type="button" x-on:click="window.print()" class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+                <button type="button" data-print class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
                     Imprimer
                 </button>
             </div>
@@ -203,4 +203,9 @@
             </section>
         @endif
     </div>
+    <script @cspNonce>
+        document.querySelectorAll('[data-print]').forEach((button) => {
+            button.addEventListener('click', () => window.print());
+        });
+    </script>
 </x-app-layout>

@@ -29,6 +29,7 @@ class Student extends Model
    'school_name',
     'school_year_id',
     'status',
+    'is_exempt',
     'photo_path',
     'birth_certificate_path',
  ];
@@ -66,5 +67,12 @@ class Student extends Model
  public function payments()
  {
     return $this->hasMany(Payment::class);
+ }
+
+ protected function casts(): array
+ {
+    return [
+        'is_exempt' => 'boolean',
+    ];
  }
 }

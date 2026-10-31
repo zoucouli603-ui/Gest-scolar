@@ -90,6 +90,16 @@
                         </select>
                     </div>
 
+                    <div class="md:col-span-2">
+                        <label class="inline-flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                            <input type="checkbox" name="is_exempt" value="1" @checked(old('is_exempt')) class="mt-0.5 rounded border-amber-300 text-amber-600 focus:ring-amber-500">
+                            <span>
+                                <span class="block font-semibold">Exonérer cet élève des frais de scolarité</span>
+                                <span class="mt-0.5 block text-xs text-amber-800">L’élève sera exclu du prévisionnel de recouvrement.</span>
+                            </span>
+                        </label>
+                    </div>
+
                     <div id="matricule-etat-field" class="hidden">
                         <label for="matricule_etat" class="block text-sm font-medium text-slate-700 mb-1">N° Matricule État</label>
                         <input id="matricule_etat" type="text" name="matricule_etat" value="{{ old('matricule_etat') }}" maxlength="255" class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm">

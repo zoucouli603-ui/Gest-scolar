@@ -20,6 +20,7 @@ use App\Http\Controllers\SchoolOnboardingController;
 use App\Http\Controllers\SchoolTeamController;
 use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\DashboardController;
+use App\Livewire\FinancialTracking;
 
 Route::get('/', fn () => view('schools.welcome'))->name('home');
 Route::view('/offline', 'offline')->name('offline');
@@ -98,6 +99,7 @@ Route::middleware([
     Route::post('/timetable', [TimetableController::class, 'store'])->name('timetable.store');
     Route::delete('/timetable/{timetableEntry}', [TimetableController::class, 'destroy'])->name('timetable.destroy');
     Route::get('/finances', [PaymentController::class, 'index'])->name('finances.index');
+    Route::get('/finances/tracking', FinancialTracking::class)->name('finances.tracking');
     Route::get('/finances/create', [PaymentController::class, 'create'])->name('finances.create');
     Route::post('/finances', [PaymentController::class, 'store'])->name('finances.store');
     Route::get('/finances/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('finances.receipt');

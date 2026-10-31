@@ -18,6 +18,9 @@
                         {{ $currentYear->name }}
                     </span>
                 @endif
+                <a href="{{ route('finances.tracking') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
+                    Synthèse financière
+                </a>
                 <a href="{{ route('finances.create') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
                     <x-icon name="plus" /> Enregistrer un paiement
                 </a>

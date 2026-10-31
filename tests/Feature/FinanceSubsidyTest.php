@@ -65,6 +65,47 @@ class FinanceSubsidyTest extends TestCase
         $this->assertDatabaseCount('payments', 0);
     }
 
+    public function test_financial_tracking_calculates_forecast_collections_and_exemptions(): void
+    {
+        [$owner, $year, $classRoom, $student] = $this->schoolWithStudent('Lycée');
+        Student::create([
+            'registration_number' => 'FIN-002',
+            'first_name' => 'Moussa',
+            'last_name' => 'Traoré',
+            'gender' => 'M',
+            'birth_date' => '2008-07-12',
+            'birth_place' => 'Bamako',
+            'nationality' => 'Malienne',
+            'inscription_date' => today(),
+            'class_name' => $classRoom->name,
+            'class_room_id' => $classRoom->id,
+            'school_year_id' => $year->id,
+            'parent_name' => 'Parent Traoré',
+            'parent_phone' => '70000001',
+            'status' => 'actif',
+            'is_exempt' => true,
+        ]);
+        Payment::create([
+            'student_id' => $student->id,
+            'class_room_id' => $classRoom->id,
+            'school_year_id' => $year->id,
+            'amount' => 10000,
+            'fee_type' => 'scolarite',
+            'fee_month' => '2026-09-01',
+            'payment_date' => today(),
+            'payment_method' => 'especes',
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('finances.tracking'))
+            ->assertOk()
+            ->assertSee('300 000 XOF')
+            ->assertSee('10 000 XOF')
+            ->assertSee('290 000 XOF')
+            ->assertSee('Septembre')
+            ->assertSee('50,0 %');
+    }
+
     private function schoolWithStudent(string $cycle): array
     {
         $owner = User::factory()->create();

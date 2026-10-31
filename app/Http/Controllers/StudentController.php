@@ -114,6 +114,7 @@ class StudentController extends Controller
                 'required',
                 Rule::exists('class_rooms', 'id')->where('school_year_id', $currentYear->id),
             ],
+            'is_exempt'       => 'sometimes|boolean',
             'parent_name'     => 'required|string|max:255',
             'parent_phone'    => 'required|string|max:255',
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:5120'],
@@ -139,6 +140,7 @@ class StudentController extends Controller
             : null;
         $validated['registration_number'] = 'DEM-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
         $validated['status'] = 'actif';
+        $validated['is_exempt'] = $request->boolean('is_exempt');
         $validated['school_year_id'] = $currentYear->id;
         $validated['inscription_date'] = $validated['inscription_date'] ?? now()->toDateString();
         $validated['school_name'] = $request->user()->school->name;
@@ -204,6 +206,7 @@ class StudentController extends Controller
             'parent_name'      => 'required|string|max:255',
             'parent_phone'     => 'required|string|max:255',
             'status'           => 'required|in:actif,inactif',
+            'is_exempt'        => 'sometimes|boolean',
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:5120'],
             'birth_certificate' => [
                 'nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'extensions:jpg,jpeg,png,pdf',
@@ -217,6 +220,7 @@ class StudentController extends Controller
             ? ($validated['matricule_etat'] ?? null)
             : null;
         $validated['school_year_id'] = $classRoom->school_year_id;
+        $validated['is_exempt'] = $request->boolean('is_exempt');
         $validated['school_name'] = $request->user()->school->name;
 
         if ($request->hasFile('photo')) {

@@ -178,15 +178,17 @@ class FinanceSubsidyTest extends TestCase
     {
         [$owner, $year] = $this->schoolWithStudent('Lycée');
 
-        Livewire::actingAs($owner)
-            ->test(FinancialTracking::class)
-            ->assertSee('type="text"', false)
-            ->set('annualForecastInput', '1 000 000')
-            ->call('saveForecast')
-            ->assertHasNoErrors()
-            ->assertSet('annualForecastInput', '1000000')
-            ->assertSee('1 000 000 XOF')
-            ->assertSee('83 334 XOF');
+        $component = Livewire::actingAs($owner)->test(FinancialTracking::class)
+            ->assertSee('type="text"', false);
+
+        foreach (['1.000.000', '1,000,000', '1 000 000'] as $formattedForecast) {
+            $component->set('annualForecastInput', $formattedForecast)
+                ->call('saveForecast')
+                ->assertHasNoErrors()
+                ->assertSet('annualForecastInput', '1000000')
+                ->assertSee('1 000 000 XOF')
+                ->assertSee('83 334 XOF');
+        }
 
         $this->assertDatabaseHas('school_years', [
             'id' => $year->id,

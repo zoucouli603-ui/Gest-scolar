@@ -30,7 +30,7 @@ class FinancialTracking extends Component
         );
 
         $this->annualForecastInput = preg_replace(
-            '/[\s\x{00A0}\x{202F}]+/u',
+            '/[.,\s\x{00A0}\x{202F}]+/u',
             '',
             trim($this->annualForecastInput)
         ) ?? $this->annualForecastInput;
@@ -46,6 +46,7 @@ class FinancialTracking extends Component
         $forecast = (int) $validated['annualForecastInput'];
         $currentYear->annual_forecast = $forecast;
         $currentYear->saveOrFail();
+        $currentYear->refresh();
         $this->annualForecastInput = (string) $forecast;
         $this->resetValidation('annualForecastInput');
         $this->forecastMessage = 'Prévisionnel annuel enregistré.';

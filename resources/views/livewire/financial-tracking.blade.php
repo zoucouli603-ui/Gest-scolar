@@ -48,7 +48,7 @@
                 <div class="flex-1">
                     <label for="annual-forecast" class="block text-sm font-semibold text-indigo-950">Prévisionnel annuel manuel ({{ $currency }})</label>
                     <p class="mt-1 text-xs text-indigo-800">Saisissez le montant annuel attendu. Il sera réparti sur les 12 mois du tableau.</p>
-                    <input id="annual-forecast" type="number" min="0" step="1" wire:model="annualForecastInput"
+                    <input id="annual-forecast" type="text" inputmode="numeric" autocomplete="off" wire:model="annualForecastInput"
                            class="mt-2 w-full rounded-lg border-indigo-200 bg-white px-3 py-2.5 text-lg font-semibold text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-md"
                            @disabled(!$currentYear)>
                     @error('annualForecastInput')

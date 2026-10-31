@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class FinancialTracking extends Component
 {
-    #[Validate('required|integer|min:0|max:999999999999')]
+    #[Validate('required|regex:/^\d+$/|integer|min:0|max:999999999999')]
     public string $annualForecastInput = '';
 
     public ?string $forecastMessage = null;
@@ -29,6 +29,12 @@ class FinancialTracking extends Component
             403
         );
 
+        $this->annualForecastInput = preg_replace(
+            '/[\s\x{00A0}\x{202F}]+/u',
+            '',
+            trim($this->annualForecastInput)
+        ) ?? $this->annualForecastInput;
+
         $validated = $this->validate();
         $currentYear = SchoolYear::query()->where('is_current', true)->first();
 
@@ -37,9 +43,11 @@ class FinancialTracking extends Component
             return;
         }
 
-        $currentYear->update([
-            'annual_forecast' => $validated['annualForecastInput'],
-        ]);
+        $forecast = (int) $validated['annualForecastInput'];
+        $currentYear->annual_forecast = $forecast;
+        $currentYear->saveOrFail();
+        $this->annualForecastInput = (string) $forecast;
+        $this->resetValidation('annualForecastInput');
         $this->forecastMessage = 'Prévisionnel annuel enregistré.';
     }
 

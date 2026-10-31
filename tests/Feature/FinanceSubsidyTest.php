@@ -74,7 +74,9 @@ class FinanceSubsidyTest extends TestCase
             ->test(FinancialTracking::class)
             ->set('annualForecastInput', '300000')
             ->call('saveForecast')
-            ->assertHasNoErrors();
+            ->assertHasNoErrors()
+            ->assertSet('annualForecastInput', '300000')
+            ->assertSee('300 000 XOF');
         $this->assertDatabaseHas('school_years', [
             'id' => $year->id,
             'annual_forecast' => 300000,
@@ -170,6 +172,26 @@ class FinanceSubsidyTest extends TestCase
             ->assertOk()
             ->assertSee('44 339 985 XOF')
             ->assertSee('3 694 998 XOF');
+    }
+
+    public function test_large_manual_forecast_is_saved_and_reflected_in_financial_totals(): void
+    {
+        [$owner, $year] = $this->schoolWithStudent('Lycée');
+
+        Livewire::actingAs($owner)
+            ->test(FinancialTracking::class)
+            ->assertSee('type="text"', false)
+            ->set('annualForecastInput', '1 000 000')
+            ->call('saveForecast')
+            ->assertHasNoErrors()
+            ->assertSet('annualForecastInput', '1000000')
+            ->assertSee('1 000 000 XOF')
+            ->assertSee('83 334 XOF');
+
+        $this->assertDatabaseHas('school_years', [
+            'id' => $year->id,
+            'annual_forecast' => 1000000,
+        ]);
     }
 
     private function schoolWithStudent(string $cycle): array

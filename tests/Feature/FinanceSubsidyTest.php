@@ -75,6 +75,10 @@ class FinanceSubsidyTest extends TestCase
             ->set('annualForecastInput', '300000')
             ->call('saveForecast')
             ->assertHasNoErrors();
+        $this->assertDatabaseHas('school_years', [
+            'id' => $year->id,
+            'annual_forecast' => 300000,
+        ]);
 
         Student::create([
             'registration_number' => 'FIN-002',
@@ -104,7 +108,7 @@ class FinanceSubsidyTest extends TestCase
             'payment_method' => 'especes',
         ]);
 
-        $this->actingAs($owner)
+        $response = $this->actingAs($owner)
             ->get(route('finances.tracking'))
             ->assertOk()
             ->assertSee('300 000 XOF')
@@ -113,7 +117,19 @@ class FinanceSubsidyTest extends TestCase
             ->assertSee('Septembre')
             ->assertSee('50,0 %')
             ->assertSee('TOTAL / ANNUEL')
-            ->assertSee('Élèves payants');
+            ->assertSee('Élèves payants')
+            ->assertSee('SYNTHÈSE FINANCIÈRE ET EFFECTIFS')
+            ->assertSee('Tableau de suivi du recouvrement des frais scolaires')
+            ->assertSee('École Finance');
+
+        $tablePosition = strpos($response->getContent(), 'Tableau de suivi du recouvrement des frais scolaires');
+        $tableHtml = substr($response->getContent(), $tablePosition);
+        $columnPositions = array_map(
+            fn ($heading) => strpos($tableHtml, $heading),
+            ['Mois', 'Élèves payants', 'Prévisionnel', 'Montant encaissé', 'Taux de recouvrement', 'Créance cumulée']
+        );
+        $this->assertSame($columnPositions, array_values($columnPositions));
+        $this->assertSame($columnPositions, collect($columnPositions)->sort()->values()->all());
     }
 
     public function test_director_can_open_financial_tracking_but_not_general_finances(): void
@@ -144,6 +160,10 @@ class FinanceSubsidyTest extends TestCase
             ->call('saveForecast')
             ->assertHasNoErrors()
             ->assertSee('3 694 999 XOF');
+        $this->assertDatabaseHas('school_years', [
+            'school_id' => $owner->school_id,
+            'annual_forecast' => 44339985,
+        ]);
 
         $this->actingAs($owner)
             ->get(route('finances.tracking'))

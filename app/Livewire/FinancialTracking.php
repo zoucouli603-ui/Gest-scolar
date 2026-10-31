@@ -30,7 +30,7 @@ class FinancialTracking extends Component
         );
 
         $this->annualForecastInput = preg_replace(
-            '/[.,\s\x{00A0}\x{202F}]+/u',
+            '/[^0-9]+/',
             '',
             trim($this->annualForecastInput)
         ) ?? $this->annualForecastInput;

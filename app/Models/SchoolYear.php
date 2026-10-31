@@ -12,7 +12,14 @@ class SchoolYear extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'is_current', 'school_id'];
+    protected $fillable = ['name', 'is_current', 'school_id', 'annual_forecast'];
+
+    protected function casts(): array
+    {
+        return [
+            'annual_forecast' => 'decimal:2',
+        ];
+    }
 
     protected static function booted(): void
     {

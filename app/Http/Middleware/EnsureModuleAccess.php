@@ -17,6 +17,10 @@ class EnsureModuleAccess
             return $next($request);
         }
 
+        if ($name === 'finances.tracking' && $user->role === 'directeur') {
+            return $next($request);
+        }
+
         $module = $name === 'sync.notes' ? 'notes' : explode('.', $name)[0];
 
         if (!in_array($module, \App\Models\User::MODULES, true) || $user->canAccess($module)) {

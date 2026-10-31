@@ -9,7 +9,9 @@ use App\Models\SchoolYear;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
+use App\Livewire\FinancialTracking;
 
 class FinanceSubsidyTest extends TestCase
 {
@@ -68,6 +70,12 @@ class FinanceSubsidyTest extends TestCase
     public function test_financial_tracking_calculates_forecast_collections_and_exemptions(): void
     {
         [$owner, $year, $classRoom, $student] = $this->schoolWithStudent('Lycée');
+        Livewire::actingAs($owner)
+            ->test(FinancialTracking::class)
+            ->set('annualForecastInput', '300000')
+            ->call('saveForecast')
+            ->assertHasNoErrors();
+
         Student::create([
             'registration_number' => 'FIN-002',
             'first_name' => 'Moussa',
@@ -103,7 +111,45 @@ class FinanceSubsidyTest extends TestCase
             ->assertSee('10 000 XOF')
             ->assertSee('290 000 XOF')
             ->assertSee('Septembre')
-            ->assertSee('50,0 %');
+            ->assertSee('50,0 %')
+            ->assertSee('TOTAL / ANNUEL')
+            ->assertSee('Élèves payants');
+    }
+
+    public function test_director_can_open_financial_tracking_but_not_general_finances(): void
+    {
+        [$owner] = $this->schoolWithStudent('Lycée');
+        $director = User::factory()->create([
+            'school_id' => $owner->school_id,
+            'role' => 'directeur',
+        ]);
+
+        $this->actingAs($director)
+            ->get(route('finances.tracking'))
+            ->assertOk()
+            ->assertSee('Prévisionnel annuel manuel');
+
+        $this->actingAs($director)
+            ->get(route('finances.index'))
+            ->assertForbidden();
+    }
+
+    public function test_manual_annual_forecast_is_distributed_without_rounding_loss(): void
+    {
+        [$owner] = $this->schoolWithStudent('Lycée');
+
+        Livewire::actingAs($owner)
+            ->test(FinancialTracking::class)
+            ->set('annualForecastInput', '44339985')
+            ->call('saveForecast')
+            ->assertHasNoErrors()
+            ->assertSee('3 694 999 XOF');
+
+        $this->actingAs($owner)
+            ->get(route('finances.tracking'))
+            ->assertOk()
+            ->assertSee('44 339 985 XOF')
+            ->assertSee('3 694 998 XOF');
     }
 
     private function schoolWithStudent(string $cycle): array

@@ -5,16 +5,48 @@ namespace App\Livewire;
 use App\Models\Payment;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class FinancialTracking extends Component
 {
+    #[Validate('required|integer|min:0|max:999999999999')]
+    public string $annualForecastInput = '';
+
+    public ?string $forecastMessage = null;
+
+    public function mount(): void
+    {
+        $this->annualForecastInput = (string) (
+            SchoolYear::query()->where('is_current', true)->value('annual_forecast') ?? '0'
+        );
+    }
+
+    public function saveForecast(): void
+    {
+        abort_unless(
+            auth()->user()?->canAccess('finances') || auth()->user()?->role === 'directeur',
+            403
+        );
+
+        $validated = $this->validate();
+        $currentYear = SchoolYear::query()->where('is_current', true)->first();
+
+        if (! $currentYear) {
+            $this->addError('annualForecastInput', 'Aucune année scolaire active n’est définie.');
+            return;
+        }
+
+        $currentYear->update([
+            'annual_forecast' => $validated['annualForecastInput'],
+        ]);
+        $this->forecastMessage = 'Prévisionnel annuel enregistré.';
+    }
+
     public function render()
     {
         $currentYear = SchoolYear::query()->where('is_current', true)->first();
-        $classes = $currentYear
-            ? $currentYear->classes()->get(['id', 'name', 'monthly_fee'])
-            : collect();
+        $storedAnnualForecast = (float) ($currentYear?->annual_forecast ?? 0);
         $students = $currentYear
             ? Student::query()
                 ->where('school_year_id', $currentYear->id)
@@ -22,9 +54,6 @@ class FinancialTracking extends Component
                 ->get(['class_room_id', 'class_name', 'is_exempt'])
             : collect();
 
-        $classesById = $classes->keyBy('id');
-        $classesByName = $classes->keyBy(fn ($class) => mb_strtolower(trim($class->name)));
-        $monthlyForecast = 0.0;
         $payingStudents = 0;
         $exemptStudents = 0;
 
@@ -35,22 +64,17 @@ class FinancialTracking extends Component
             }
 
             $payingStudents++;
-            $classRoom = $classesById->get($student->class_room_id)
-                ?? $classesByName->get(mb_strtolower(trim($student->class_name)));
-
-            if ($classRoom) {
-                $monthlyForecast += (float) $classRoom->monthly_fee;
-            }
         }
 
-        $annualForecast = $monthlyForecast * 12;
+        $annualForecast = $payingStudents > 0 ? (int) $storedAnnualForecast : 0;
+        $monthlyForecastBase = intdiv($annualForecast, 12);
+        $monthlyForecastRemainder = $annualForecast % 12;
         $payments = $currentYear
             ? Payment::query()
                 ->where('school_year_id', $currentYear->id)
                 ->where('fee_type', 'scolarite')
                 ->get(['amount', 'fee_month'])
             : collect();
-        $realizedTotal = (float) $payments->sum('amount');
         $monthlyCollections = $payments
             ->filter(fn ($payment) => $payment->fee_month !== null)
             ->groupBy(fn ($payment) => (int) $payment->fee_month->format('n'))
@@ -64,14 +88,19 @@ class FinancialTracking extends Component
         $monthlyTracking = [];
         $cumulativeForecast = 0.0;
         $cumulativeCollection = 0.0;
+        $annualCollected = 0.0;
 
         foreach ($months as $monthNumber => $monthName) {
+            $monthlyForecast = $monthlyForecastBase
+                + ($monthNumber <= $monthlyForecastRemainder ? 1 : 0);
             $collected = $monthlyCollections->get($monthNumber, 0.0);
             $cumulativeForecast += $monthlyForecast;
             $cumulativeCollection += $collected;
+            $annualCollected += $collected;
 
             $monthlyTracking[] = [
                 'name' => $monthName,
+                'paying_students' => $payingStudents,
                 'forecast' => $monthlyForecast,
                 'collected' => $collected,
                 'recovery_rate' => $monthlyForecast > 0
@@ -86,11 +115,14 @@ class FinancialTracking extends Component
         return view('livewire.financial-tracking', [
             'currentYear' => $currentYear,
             'annualForecast' => $annualForecast,
-            'realizedTotal' => $realizedTotal,
-            'remainingClaim' => max(0, $annualForecast - $realizedTotal),
+            'annualForecastInput' => $this->annualForecastInput,
+            'realizedTotal' => $annualCollected,
+            'remainingClaim' => max(0, $annualForecast - $annualCollected),
             'globalRecoveryRate' => $annualForecast > 0
-                ? ($realizedTotal / $annualForecast) * 100
+                ? ($annualCollected / $annualForecast) * 100
                 : 0,
+            'annualCollected' => $annualCollected,
+            'forecastMessage' => $this->forecastMessage,
             'totalStudents' => $totalStudents,
             'payingStudents' => $payingStudents,
             'exemptStudents' => $exemptStudents,

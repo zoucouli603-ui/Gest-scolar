@@ -5,12 +5,10 @@ namespace App\Livewire;
 use App\Models\Payment;
 use App\Models\SchoolYear;
 use App\Models\Student;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class FinancialTracking extends Component
 {
-    #[Validate('required|regex:/^\d+$/|integer|min:0|max:999999999999')]
     public string $annualForecastInput = '';
 
     public ?string $forecastMessage = null;
@@ -22,7 +20,7 @@ class FinancialTracking extends Component
         );
     }
 
-    public function saveForecast(): void
+    public function saveAnnualExpected(string $submittedValue): void
     {
         abort_unless(
             auth()->user()?->canAccess('finances') || auth()->user()?->role === 'directeur',
@@ -32,10 +30,12 @@ class FinancialTracking extends Component
         $this->annualForecastInput = preg_replace(
             '/[^0-9]+/',
             '',
-            trim($this->annualForecastInput)
-        ) ?? $this->annualForecastInput;
+            trim($submittedValue)
+        ) ?? '';
 
-        $validated = $this->validate();
+        $validated = $this->validate([
+            'annualForecastInput' => ['required', 'regex:/^\d+$/', 'integer', 'min:0', 'max:999999999999'],
+        ]);
         $currentYear = SchoolYear::query()->where('is_current', true)->first();
 
         if (! $currentYear) {
@@ -47,7 +47,7 @@ class FinancialTracking extends Component
         $currentYear->annual_forecast = $forecast;
         $currentYear->saveOrFail();
         $currentYear->refresh();
-        $this->annualForecastInput = (string) $forecast;
+        $this->annualForecastInput = (string) (int) $currentYear->annual_forecast;
         $this->resetValidation('annualForecastInput');
         $this->forecastMessage = 'Prévisionnel annuel enregistré.';
     }
@@ -75,7 +75,7 @@ class FinancialTracking extends Component
             $payingStudents++;
         }
 
-        $annualForecast = $payingStudents > 0 ? (int) $storedAnnualForecast : 0;
+        $annualForecast = (int) $storedAnnualForecast;
         $monthlyForecastBase = intdiv($annualForecast, 12);
         $monthlyForecastRemainder = $annualForecast % 12;
         $payments = $currentYear

@@ -73,9 +73,10 @@ class FinanceSubsidyTest extends TestCase
         Livewire::actingAs($owner)
             ->test(FinancialTracking::class)
             ->set('annualForecastInput', '300000')
-            ->call('saveAnnualExpected', '300000')
+            ->call('saveAnnualExpected')
             ->assertHasNoErrors()
             ->assertSet('annualForecastInput', '300000')
+            ->assertSet('annualExpected', 300000)
             ->assertSee('300 000 XOF');
         $this->assertDatabaseHas('school_years', [
             'id' => $year->id,
@@ -159,8 +160,9 @@ class FinanceSubsidyTest extends TestCase
         Livewire::actingAs($owner)
             ->test(FinancialTracking::class)
             ->set('annualForecastInput', '44339985')
-            ->call('saveAnnualExpected', '44339985')
+            ->call('saveAnnualExpected')
             ->assertHasNoErrors()
+            ->assertSet('annualExpected', 44339985)
             ->assertSee('3 694 999 XOF');
         $this->assertDatabaseHas('school_years', [
             'school_id' => $owner->school_id,
@@ -182,9 +184,11 @@ class FinanceSubsidyTest extends TestCase
             ->assertSee('type="text"', false);
 
         foreach (['1.000.000', '1,000,000', '1 000 000'] as $formattedForecast) {
-            $component->call('saveAnnualExpected', $formattedForecast)
+            $component->set('annualForecastInput', $formattedForecast)
+                ->call('saveAnnualExpected')
                 ->assertHasNoErrors()
                 ->assertSet('annualForecastInput', '1000000')
+                ->assertSet('annualExpected', 1000000)
                 ->assertSee('1 000 000 XOF')
                 ->assertSee('83 334 XOF');
         }
@@ -202,14 +206,16 @@ class FinanceSubsidyTest extends TestCase
         $this->actingAs($owner)
             ->get(route('finances.tracking'))
             ->assertOk()
-            ->assertSee('wire:click="saveAnnualExpected($wire.annualForecastInput)"', false)
+            ->assertSee('wire:click="saveAnnualExpected"', false)
             ->assertSee('name="annualForecastInput"', false);
 
         Livewire::actingAs($owner)
             ->test(FinancialTracking::class)
-            ->call('saveAnnualExpected', '1.000.000')
+            ->set('annualForecastInput', '1.000.000')
+            ->call('saveAnnualExpected')
             ->assertHasNoErrors()
             ->assertSet('annualForecastInput', '1000000')
+            ->assertSet('annualExpected', 1000000)
             ->assertSee('1 000 000 XOF');
 
         $this->assertDatabaseHas('school_years', [
@@ -226,8 +232,9 @@ class FinanceSubsidyTest extends TestCase
         Livewire::actingAs($owner)
             ->test(FinancialTracking::class)
             ->set('annualForecastInput', '1000000')
-            ->call('saveAnnualExpected', '1000000')
+            ->call('saveAnnualExpected')
             ->assertHasNoErrors()
+            ->assertSet('annualExpected', 1000000)
             ->assertSee('1 000 000 XOF')
             ->assertSee('83 334 XOF');
     }

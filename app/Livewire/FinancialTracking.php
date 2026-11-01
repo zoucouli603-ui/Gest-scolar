@@ -5,22 +5,27 @@ namespace App\Livewire;
 use App\Models\Payment;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class FinancialTracking extends Component
 {
     public string $annualForecastInput = '';
 
+    #[Locked]
+    public int $annualExpected = 0;
+
     public ?string $forecastMessage = null;
 
     public function mount(): void
     {
-        $this->annualForecastInput = (string) (
-            SchoolYear::query()->where('is_current', true)->value('annual_forecast') ?? '0'
+        $this->annualExpected = (int) (
+            SchoolYear::query()->where('is_current', true)->value('annual_forecast') ?? 0
         );
+        $this->annualForecastInput = (string) $this->annualExpected;
     }
 
-    public function saveAnnualExpected(string $submittedValue): void
+    public function saveAnnualExpected(): void
     {
         abort_unless(
             auth()->user()?->canAccess('finances') || auth()->user()?->role === 'directeur',
@@ -30,7 +35,7 @@ class FinancialTracking extends Component
         $this->annualForecastInput = preg_replace(
             '/[^0-9]+/',
             '',
-            trim($submittedValue)
+            trim($this->annualForecastInput)
         ) ?? '';
 
         $validated = $this->validate([
@@ -47,7 +52,8 @@ class FinancialTracking extends Component
         $currentYear->annual_forecast = $forecast;
         $currentYear->saveOrFail();
         $currentYear->refresh();
-        $this->annualForecastInput = (string) (int) $currentYear->annual_forecast;
+        $this->annualExpected = (int) $currentYear->annual_forecast;
+        $this->annualForecastInput = (string) $this->annualExpected;
         $this->resetValidation('annualForecastInput');
         $this->forecastMessage = 'Prévisionnel annuel enregistré.';
     }
@@ -55,7 +61,6 @@ class FinancialTracking extends Component
     public function render()
     {
         $currentYear = SchoolYear::query()->where('is_current', true)->first();
-        $storedAnnualForecast = (float) ($currentYear?->annual_forecast ?? 0);
         $students = $currentYear
             ? Student::query()
                 ->where('school_year_id', $currentYear->id)
@@ -75,7 +80,7 @@ class FinancialTracking extends Component
             $payingStudents++;
         }
 
-        $annualForecast = (int) $storedAnnualForecast;
+        $annualForecast = $this->annualExpected;
         $monthlyForecastBase = intdiv($annualForecast, 12);
         $monthlyForecastRemainder = $annualForecast % 12;
         $payments = $currentYear

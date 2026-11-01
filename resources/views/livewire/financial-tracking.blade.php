@@ -44,11 +44,11 @@
         </div>
 
         <section class="financial-no-print rounded-2xl border border-indigo-200 bg-indigo-50 p-5 shadow-sm">
-            <form class="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <form wire:submit="saveAnnualExpected" class="flex flex-col gap-4 sm:flex-row sm:items-end">
                 <div class="flex-1">
                     <label for="annual-forecast" class="block text-sm font-semibold text-indigo-950">Prévisionnel annuel manuel ({{ $currency }})</label>
                     <p class="mt-1 text-xs text-indigo-800">Saisissez le montant annuel attendu. Il sera réparti sur les 12 mois du tableau.</p>
-                    <input id="annual-forecast" name="annualForecastInput" type="text" inputmode="numeric" autocomplete="off" wire:model.live="annualForecastInput"
+                    <input id="annual-forecast" name="annualForecastInput" type="text" inputmode="numeric" autocomplete="off" wire:model="annualForecastInput"
                            class="mt-2 w-full rounded-lg border-indigo-200 bg-white px-3 py-2.5 text-lg font-semibold text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-md"
                            @disabled(!$currentYear)>
                     @error('annualForecastInput')
@@ -58,7 +58,7 @@
                         <p class="mt-1 text-sm font-medium text-emerald-700" role="status">{{ $forecastMessage }}</p>
                     @endif
                 </div>
-                <button type="button" wire:click="saveAnnualExpected" wire:loading.attr="disabled" @disabled(!$currentYear)
+                <button type="submit" wire:loading.attr="disabled" @disabled(!$currentYear)
                         class="rounded-lg bg-indigo-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50">
                     Enregistrer le prévisionnel
                 </button>

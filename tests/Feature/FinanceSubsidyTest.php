@@ -206,7 +206,7 @@ class FinanceSubsidyTest extends TestCase
         $this->actingAs($owner)
             ->get(route('finances.tracking'))
             ->assertOk()
-            ->assertSee('wire:click="saveAnnualExpected"', false)
+            ->assertSee('wire:submit="saveAnnualExpected"', false)
             ->assertSee('name="annualForecastInput"', false);
 
         Livewire::actingAs($owner)
